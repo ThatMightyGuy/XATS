@@ -23,9 +23,3 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
-
-# useless stuff you still want
-.old
-.log
-.disabled
-.bak
