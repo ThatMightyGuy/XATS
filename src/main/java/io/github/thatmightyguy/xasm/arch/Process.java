@@ -51,7 +51,7 @@ public class Process {
     }
     
     public void tick() {
-        instructionPointer += Runner.run(code, instructionPointer, registers);
+        instructionPointer += Runner.runOnce(code, instructionPointer, registers);
     }
 
     public List<List<XasmToken>> getTokens() {

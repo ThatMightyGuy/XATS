@@ -17,6 +17,7 @@ set APP_HOME=%DIRNAME%
 set DEFAULT_JVM_OPTS=
 
 @rem Find java.exe
+set JAVA_HOME=C:\Users\jetfly\scoop\apps\openjdk8-redhat\current\
 if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe

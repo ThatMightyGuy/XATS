@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "xats",
+  "name": "XATS",
+  "description": "eXecution Agents for Transferring Stuff - Doing menial tasks how turbonerds like it, in glorious Assembler.\n\nAdds conduits and microcontrollers, programmable in a custom interpretation of Assembler, much like EXAPUNKS.\n\nOpenComputers interop is very much planned - the MCU will be replaced by an interface block in such systems.\n\nThank you Zach.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "url": "https://thatmightyguy.github.io",
+  "updateUrl": "https://github.com/thatmightyguy/xats",
+  "authorList": ["ThatMightyGuy"],
+  "credits": "Zachtronics?",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

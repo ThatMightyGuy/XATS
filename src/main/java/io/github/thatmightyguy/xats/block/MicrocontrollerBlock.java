@@ -1,13 +1,25 @@
 package io.github.thatmightyguy.xats.block;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 
-public class MicrocontrollerBlock extends Block {
+public class MicrocontrollerBlock extends ModBlock {
 
     public MicrocontrollerBlock() {
-        super(Properties.of(Material.STONE));
+        super(Material.ROCK, "mcu");
     }
+
+    @Override
+	@Deprecated
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+	
+	@Override
+	@Deprecated
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
 
     public String exposeTest(String xdd) {
         return xdd.toUpperCase();

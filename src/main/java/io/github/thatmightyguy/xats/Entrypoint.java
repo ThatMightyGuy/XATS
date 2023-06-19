@@ -1,121 +1,67 @@
 package io.github.thatmightyguy.xats;
 
-import com.mojang.logging.LogUtils;
-
 import io.github.thatmightyguy.xasm.arch.Process;
-import io.github.thatmightyguy.xasm.token.XasmToken;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CreativeModeTabEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import io.github.thatmightyguy.xats.block.ModBlocks;
+import io.github.thatmightyguy.xats.item.ModItems;
+import io.github.thatmightyguy.xats.util.CommonProxy;
+import io.github.thatmightyguy.xats.util.XatsCreativeTab;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod(Entrypoint.MODID)
+@Mod(modid = Entrypoint.MODID, name = Entrypoint.NAME, version = Entrypoint.VERSION)
 public class Entrypoint
 {
-    // Define mod id in a common place for everything to reference
     public static final String MODID = "xats";
-    // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
+    public static final String NAME = "XATS";
+    public static final String VERSION = "1.12.2-1.0.0.0";
 
-    // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of(Material.STONE)));
-    // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
-    public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
+    public static XatsCreativeTab modTab;
 
-    public Entrypoint()
+    public static Logger logger;
+
+    @Mod.Instance(MODID)
+    public static Entrypoint instance;
+
+    @SidedProxy(serverSide = "io.github.thatmightyguy.xats.util.CommonProxy", clientSide = "io.github.thatmightyguy.xats.util.ClientProxy")
+    public static CommonProxy proxy;
+
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event)
     {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        // Register the commonSetup method for modloading
-        modEventBus.addListener(this::commonSetup);
-
-        // Register the Deferred Register to the mod event bus so blocks get registered
-        BLOCKS.register(modEventBus);
-        // Register the Deferred Register to the mod event bus so items get registered
-        ITEMS.register(modEventBus);
-
-        // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
-
-        // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
+        logger = event.getModLog();
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event)
+    @EventHandler
+    public void init(FMLInitializationEvent event)
     {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
-        LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
-        Process m = new Process("""
-                MOV A "TEST OUTPUT"
-                MOV B "INFO"
-                :OUTPUT
-                OUT A B
-                JMP @OUTPUT
-                """);
-        List<List<XasmToken>> tokens = m.getTokens();
-        for(List<XasmToken> tok : tokens) {
-            String data = "";
-            for(XasmToken t : tok)
-                data += t.get() + " ";
-            LOGGER.info(data);
-        }
-        LOGGER.info("No more code!");
+        modTab = new XatsCreativeTab();
     }
 
-    private void addCreative(CreativeModeTabEvent.BuildContents event)
-    {
-        if (event.getTab() == CreativeModeTabs.BUILDING_BLOCKS)
-            event.accept(EXAMPLE_BLOCK_ITEM);
-    }
-
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
-    }
-
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
+    @Mod.EventBusSubscriber
+    public static class RegistrationHandler {
         @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-            // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+        public static void registerBlocks(RegistryEvent.Register<Block> e) {
+            logger.info("Registering blocks");
+            ModBlocks.registerBlocks(e);
         }
 
-        private ClientModEvents() {}
+        @SubscribeEvent
+        public static void registerItems(RegistryEvent.Register<Item> e) {
+            logger.info("Registering items");
+            ModItems.registerItems(e);
+        }
+
+        private RegistrationHandler() {}
     }
 }
